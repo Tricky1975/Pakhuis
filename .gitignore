@@ -400,3 +400,7 @@ FodyWeavers.xsd
 # Executables
 *.exe
 *.dll
+
+
+# Don't want any temp crap either!
+enc_temp_folder
