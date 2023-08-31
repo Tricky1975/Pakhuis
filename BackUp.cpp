@@ -42,7 +42,10 @@ namespace Slyvina {
 			auto VArchv = string("Pakhuis____"); if (ExtractDir(Vol).size()) VArchv += "AN____" + ChReplace(ChReplace(Ask(PrjConfig(), VolTag, "Alternate_Name", "Alternate name for this volume: ", ChReplace(ChReplace(Vol,'/','_'),':','_')), '/', '_'), ':', '_'); else VArchv += ChReplace(Vol, ':', '_');
 			auto VAFile = BackUpDir() + "/" + VArchv + "." + PackExt;
 			auto vMax = std::max(100,VReset);
-			if (VReset < 10) {
+			if (VReset < 0) {
+				QCol->Error("\7Negative volume Reset!");
+				PrjConfig()->Value(VolTag, "Reset", abs(VReset));
+			} else if (VReset < 10) {
 				if (!Yes(PrjConfig(), VolTag, "ForceLow", TrSPrintF("\7Are you sure it's a good idea to have a reset number as low as %d?", VReset))) {
 					PrjConfig()->Value(VolTag, "ForceLow", "");
 					PrjConfig()->Value(VolTag, "Reset", "");
@@ -92,13 +95,16 @@ namespace Slyvina {
 					auto DirTag = "VOL::" + Vol + "::" + D;
 					auto DReset = AskInt(PrjConfig(), DirTag, "Reset", "Volume " + D + " (" + Vol + ") reset value : ", Rand.Get((vMax / 4) * 3, vMax));
 					auto DCount = PrjConfig()->IntValue(DirTag, "Count");
-					if (DReset < 10) {
+					if (DReset < 0) {
+						QCol->Error("\7Negative directory reset!");
+						PrjConfig()->Value(DirTag, "Reset", abs(DReset));
+					} else if (DReset < 10) {
 						if (!Yes(PrjConfig(), DirTag, "ForceLow", TrSPrintF("\7Are you sure it's a good idea to have a number as low as %d?", DReset))) {
 							PrjConfig()->Value(DirTag,"ForceLow","");
 							PrjConfig()->Value(DirTag, "Reset", "");
 						}
 					}
-					vMax = std::max(100, DReset);
+					vMax = std::max(vMax, DReset);
 					//auto DArchv = string("Pakhuis____"); if (ExtractDir(Vol).size()) DArchv += "AN____" + ChReplace(ChReplace(Ask(PrjConfig(), VolTag, "AlternateName", "Alternate name for this volume: ", StripAll(Vol)), '/', '_'), ':', '_'); else VArchv += ChReplace(Vol, ':', '_');;  DArchv += "_______" + D;
 					auto DAFile = StripExt(VAFile) + "___DIR___" + D + "." + PackExt;
 					//auto DAFile = BackUpDir() + "/" + DArchv + "." + PackExt;
